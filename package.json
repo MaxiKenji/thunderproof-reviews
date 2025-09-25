@@ -1,0 +1,22 @@
+{
+  "name": "thunderproof-reviews",
+  "version": "1.0.0",
+  "description": "Nostr-based review system for Bitcoin ecosystem",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python -m http.server 3000",
+    "build": "echo 'Build complete'",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "nostr-tools": "^2.7.2"
+  },
+  "keywords": [
+    "nostr",
+    "bitcoin", 
+    "reviews",
+    "decentralized"
+  ],
+  "author": "Thunderproof",
+  "license": "MIT"
+}

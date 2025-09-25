@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thunderproof Embed</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            background: #1a1a2e;
+            color: #ffffff;
+            padding: 16px;
+            font-size: 14px;
+        }
+        
+        .embed-container {
+            max-width: 100%;
+            background: #16213e;
+            border-radius: 8px;
+            border: 1px solid #2a2a3e;
+            overflow: hidden;
+        }
+        
+        .embed-header {
+            background: linear-gradient(135deg, #f7931a 0%, #ffc107 100%);
+            color: #0f0f23;
+            padding: 12px 16px;
+            font-weight: 600;
+        }
+        
+        .reviews-list {
+            padding: 16px;
+        }
+        
+        .review-item {
+            border-bottom: 1px solid #2a2a3e;
+            padding: 12px 0;
+        }
+        
+        .review-item:last-child {
+            border-bottom: none;
+        }
+        
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .star-rating {
+            color: #ffc107;
+            font-size: 12px;
+        }
+        
+        .review-date {
+            color: #a0a0a0;
+            font-size: 11px;
+        }
+        
+        .review-content {
+            color: #e0e0e0;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        
+        .verified-badge {
+            background: #28a745;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            margin-left: 8px;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #a0a0a0;
+            padding: 20px;
+        }
+        
+        .powered-by {
+            text-align: center;
+            padding: 8px;
+            background: #0f0f23;
+            color: #666;
+            font-size: 11px;
+        }
+        
+        .powered-by a {
+            color: #f7931a;
+            text-decoration: none;
+        }
+        
+        .stars-image {
+            height: 12px;
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="embed-container">
+        <div class="embed-header">
+            <span id="profile-name">Thunderproof Reviews</span>
+        </div>
+        <div class="reviews-list" id="reviews-list">
+            <div class="loading">Loading reviews...</div>
+        </div>
+        <div class="powered-by">
+            Powered by <a href="https://thunderproof.org" target="_blank">⚡ Thunderproof</a>
+        </div>
+    </div>
+
+    <script type="module">
+        class EmbedWidget {
+            constructor() {
+                this.profileKey = null;
+                this.maxReviews = 5;
+                this.reviews = [];
+                this.init();
+            }
+            
+            async init() {
+                this.parseParams();
+                await this.loadReviews();
+            }
+            
+            parseParams() {
+                const params = new URLSearchParams(window.location.search);
+                this.profileKey = params.get('profile');
+                this.maxReviews = parseInt(params.get('max')) || 5;
+            }
+            
+            async loadReviews() {
+                if (!this.profileKey) {
+                    this.showError('No profile specified');
+                    return;
+                }
+                
+                try {
+                    // Show sample reviews for demo
+                    setTimeout(() => {
+                        this.displaySampleReviews();
+                    }, 1000);
+                } catch (error) {
+                    this.showError('Failed to load reviews');
+                }
+            }
+            
+            displaySampleReviews() {
+                const sampleReviews = [
+                    {
+                        rating: 5,
+                        content: "Excellent Bitcoin service! Fast Lightning payments and great support.",
+                        author: "npub1alice...",
+                        date: "2024-09-23",
+                        verified: true
+                    },
+                    {
+                        rating: 4,
+                        content: "Very reliable. Had one minor issue but was resolved quickly.",
+                        author: "npub1bob...", 
+                        date: "2024-09-22",
+                        verified: true
+                    },
+                    {
+                        rating: 5,
+                        content: "Outstanding experience with this service. Will definitely use again!",
+                        author: "npub1carol...",
+                        date: "2024-09-20", 
+                        verified: false
+                    },
+                    {
+                        rating: 4,
+                        content: "Good service overall. Fast transactions and helpful support team.",
+                        author: "npub1dave...",
+                        date: "2024-09-18",
+                        verified: true
+                    },
+                    {
+                        rating: 5,
+                        content: "Perfect! Exactly what I needed for my Bitcoin business.",
+                        author: "npub1eve...",
+                        date: "2024-09-15",
+                        verified: false
+                    }
+                ];
+                
+                const reviewsToShow = sampleReviews.slice(0, this.maxReviews);
+                
+                if (reviewsToShow.length === 0) {
+                    document.getElementById('reviews-list').innerHTML = '<div class="loading">No reviews yet</div>';
+                    return;
+                }
+                
+                const reviewsHTML = reviewsToShow.map(review => `
+                    <div class="review-item">
+                        <div class="review-header">
+                            <div>
+                                <span class="star-rating">
+                                    ${this.renderStars(review.rating)}
+                                </span>
+                                ${review.verified ? '<span class="verified-badge">⚡ Verified</span>' : ''}
+                            </div>
+                            <span class="review-date">${new Date(review.date).toLocaleDateString()}</span>
+                        </div>
+                        <div class="review-content">${review.content}</div>
+                    </div>
+                `).join('');
+                
+                document.getElementById('reviews-list').innerHTML = reviewsHTML;
+                document.getElementById('profile-name').textContent = `Reviews (${reviewsToShow.length})`;
+            }
+            
+            renderStars(rating) {
+                // For demo, use text stars. In production, you'd use your SVG assets
+                return '★'.repeat(rating) + '☆'.repeat(5 - rating);
+            }
+            
+            showError(message) {
+                document.getElementById('reviews-list').innerHTML = `<div class="loading" style="color: #dc3545;">${message}</div>`;
+            }
+        }
+        
+        new EmbedWidget();
+    </script>
+</body>
+</html>
